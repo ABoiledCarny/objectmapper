@@ -1,4 +1,4 @@
-ObjectMapper
+objectmapper
 ============
 
 A small module for mapping between object types.
