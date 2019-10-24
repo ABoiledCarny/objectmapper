@@ -6,6 +6,9 @@ API
 Documentation
 ~~~~~~~~~~~~~
 
+.. autofunction:: objectmapper.create_map
+.. autofunction:: objectmapper.map
+
 .. autoclass:: objectmapper.ObjectMapper
 	 :members:
 
