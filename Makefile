@@ -10,10 +10,10 @@ testall:
 	tox -c tox.ini -p $(NPROC)
 
 lint:
-	pylint --rcfile .pylintrc $(PKG_NAME)
+	pylint --rcfile .pylintrc $(PKG_NAME) tests
 
 typecheck:
-	pytype --config .pytyperc $(PKG_NAME)
+	pytype --config .pytyperc $(PKG_NAME) tests
 
 coverage:
 	pytest --cov-config .coveragerc --cov=$(PKG_NAME)
