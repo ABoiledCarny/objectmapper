@@ -2,21 +2,29 @@
 from typing import Any, Callable, Optional, Type, TypeVar
 
 from .objectmapper import ObjectMapper, _InputType, _OutputType
-from .exceptions import (ObjectMapperError,
-                         DuplicateMappingError,
-                         MapTypeError,
-                         MapInputKeyError,
-                         MapOutputKeyError)
+from .exceptions import (
+    DuplicateMappingError,
+    MapTypeError,
+    MapFunctionTypeError,
+    MapKeyError,
+    MapInputKeyError,
+    MapOutputKeyError,
+    ObjectMapperError,
+)
 
 
-__all__ = ['ObjectMapper',
-           'DuplicateMappingError',
-           'ObjectMapperError',
-           'MapTypeError',
-           'MapInputKeyError',
-           'MapOutputKeyError',
-           'create_map',
-           'map']
+__all__ = [
+    'create_map',
+    'DuplicateMappingError',
+    'map',
+    'MapTypeError',
+    'MapFunctionTypeError',
+    'MapKeyError',
+    'MapInputKeyError',
+    'MapOutputKeyError',
+    'ObjectMapper',
+    'ObjectMapperError',
+]
 
 
 _OBJECT_MAPPER = ObjectMapper()
@@ -67,7 +75,10 @@ def create_map(InputType: Type[_InputType],  # pylint: disable=invalid-name
        importlib.reload(objectmapper)
 
     `MapTypeError` is raised if `InputType` or `OutputType` are not
-    types, or if `map_function` is not callable.
+    types.
+
+    `MapFunctionTypeError` is raised if `map_function` is not
+    callable.
 
     `DuplicateMappingError` is raised if there is a pre-existing
     mapping from `InputType` to `OutputType` and `force` is `False`.

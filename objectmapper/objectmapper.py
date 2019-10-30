@@ -2,10 +2,7 @@
 
 from typing import Any, Callable, Optional, Type, TypeVar
 
-from objectmapper.exceptions import (DuplicateMappingError,
-                                     MapTypeError,
-                                     MapInputKeyError,
-                                     MapOutputKeyError)
+from . import exceptions
 
 
 _InputType = TypeVar('_InputType')
@@ -27,20 +24,20 @@ class ObjectMapper:
                    force: bool = False) \
                    -> Optional[Callable[[Callable[[_InputType], _OutputType]], None]]:
         '''Stores a localized mapping between types. See `create_map`'''
-        if not all(map(lambda x: isinstance(x, type), [InputType, OutputType])):
-            raise MapTypeError(f'Mappings must be between types, not between {type(InputType)} and'
-                               f' {type(OutputType)}')
+        for map_type in [InputType, OutputType]:
+            if not isinstance(map_type, type):
+                raise exceptions.MapTypeError(map_type)
 
         def set_map_function(map_function: Callable[[_InputType], _OutputType]) -> None:
             if not callable(map_function):
-                raise MapTypeError(f'Map value must be callable, not {type(map_function)}')
+                raise exceptions.MapFunctionTypeError(map_function)
 
             self._mappings.setdefault(InputType, dict())
 
             if not force:
                 mapping = self._mappings[InputType].get(OutputType, None)
                 if mapping:
-                    raise DuplicateMappingError(InputType, OutputType, mapping)
+                    raise exceptions.DuplicateMappingError(InputType, OutputType, mapping)
             self._mappings[InputType][OutputType] = map_function
 
         if map_function is None:
@@ -54,10 +51,10 @@ class ObjectMapper:
         '''
         InputType = type(input_instance)  # pylint: disable=invalid-name
         if InputType not in self._mappings:
-            raise MapInputKeyError(InputType)
+            raise exceptions.MapInputKeyError(InputType)
 
         map_function = self._mappings[InputType].get(OutputType, None)
         if not map_function:
-            raise MapOutputKeyError(InputType, OutputType)
+            raise exceptions.MapOutputKeyError(InputType, OutputType)
 
         return map_function(input_instance)

@@ -101,7 +101,7 @@ def test_output_not_type(empty_mapper, int_to_str):
 
 def test_not_callable(empty_mapper):
     '''Test invalid map function type.'''
-    with pytest.raises(objectmapper.MapTypeError):
+    with pytest.raises(objectmapper.MapFunctionTypeError):
         empty_mapper.create_map(int, str, 42)
 
 def test_map_input_key_error(empty_mapper):
