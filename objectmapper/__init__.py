@@ -30,14 +30,14 @@ __all__ = [
 _OBJECT_MAPPER = ObjectMapper()
 
 
-def create_map(InputType: Type[_InputType],  # pylint: disable=invalid-name
-               OutputType: Type[_OutputType],
+def create_map(input_type: Type[_InputType],
+               output_type: Type[_OutputType],
                map_function: Callable[[_InputType], _OutputType] = None,
                force: bool = False) \
                -> Optional[Callable[[Callable[[_InputType], _OutputType]], None]]:
-    '''Stores a mapping (`map_function`) from objects of type `InputType`
-    to an object of type `OutputType`. If `force` is `True`, then any
-    pre-existing mapping from `InputType` to `OutputType` is
+    '''Stores a mapping (`map_function`) from objects of type `input_type`
+    to an object of type `output_type`. If `force` is `True`, then any
+    pre-existing mapping from `input_type` to `output_type` is
     overwritten.
 
     .. testsetup:: create_map_explicit
@@ -74,21 +74,21 @@ def create_map(InputType: Type[_InputType],  # pylint: disable=invalid-name
        import importlib
        importlib.reload(objectmapper)
 
-    `MapTypeError` is raised if `InputType` or `OutputType` are not
+    `MapTypeError` is raised if `input_type` or `output_type` are not
     types.
 
     `MapFunctionTypeError` is raised if `map_function` is not
     callable.
 
     `DuplicateMappingError` is raised if there is a pre-existing
-    mapping from `InputType` to `OutputType` and `force` is `False`.
+    mapping from `input_type` to `output_type` and `force` is `False`.
     '''
-    return _OBJECT_MAPPER.create_map(InputType, OutputType, map_function, force)
+    return _OBJECT_MAPPER.create_map(input_type, output_type, map_function, force)
 
 
-def map(input_instance: Any, OutputType: Type[_OutputType]) -> _OutputType:  # pylint: disable=invalid-name, redefined-builtin
-    '''Returns an object of type `OutputType` by giving `input_instance`
-    to the mapping from `type(input_instance)` to `OutputType`.
+def map(input_instance: Any, output_type: Type[_OutputType]) -> _OutputType:  # pylint: disable=redefined-builtin
+    '''Returns an object of type `output_type` by giving `input_instance`
+    to the mapping from `type(input_instance)` to `output_type`.
 
     .. testsetup:: map
 
@@ -117,6 +117,6 @@ def map(input_instance: Any, OutputType: Type[_OutputType]) -> _OutputType:  # p
     `type(input_instance)`.
 
     Raises `MapOutputKeyError` if there are no mappings from
-    `type(input_instance)` to `OutputType`.
+    `type(input_instance)` to `output_type`.
     '''
-    return _OBJECT_MAPPER.map(input_instance, OutputType)
+    return _OBJECT_MAPPER.map(input_instance, output_type)

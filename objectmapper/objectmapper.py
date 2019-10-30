@@ -17,14 +17,14 @@ class ObjectMapper:
     def __init__(self) -> None:
         self._mappings = dict()
 
-    def create_map(self,  # pylint: disable=invalid-name
-                   InputType: Type[_InputType],
-                   OutputType: Type[_OutputType],
+    def create_map(self,
+                   input_type: Type[_InputType],
+                   output_type: Type[_OutputType],
                    map_function: Optional[Callable[[_InputType], _OutputType]] = None,
                    force: bool = False) \
                    -> Optional[Callable[[Callable[[_InputType], _OutputType]], None]]:
         '''Stores a localized mapping between types. See `create_map`'''
-        for map_type in [InputType, OutputType]:
+        for map_type in [input_type, output_type]:
             if not isinstance(map_type, type):
                 raise exceptions.MapTypeError(map_type)
 
@@ -32,29 +32,29 @@ class ObjectMapper:
             if not callable(map_function):
                 raise exceptions.MapFunctionTypeError(map_function)
 
-            self._mappings.setdefault(InputType, dict())
+            self._mappings.setdefault(input_type, dict())
 
             if not force:
-                mapping = self._mappings[InputType].get(OutputType, None)
+                mapping = self._mappings[input_type].get(output_type, None)
                 if mapping:
-                    raise exceptions.DuplicateMappingError(InputType, OutputType, mapping)
-            self._mappings[InputType][OutputType] = map_function
+                    raise exceptions.DuplicateMappingError(input_type, output_type, mapping)
+            self._mappings[input_type][output_type] = map_function
 
         if map_function is None:
             return set_map_function
         return set_map_function(map_function)
 
-    def map(self, input_instance: Any, OutputType: Type[_OutputType]) -> _OutputType:  # pylint: disable=invalid-name
+    def map(self, input_instance: Any, output_type: Type[_OutputType]) -> _OutputType:
         '''Converts `input_instance` using a mapping from
-        `type(input_instance)` to `OutputType`. See `map`.
+        `type(input_instance)` to `output_type`. See `map`.
 
         '''
-        InputType = type(input_instance)  # pylint: disable=invalid-name
-        if InputType not in self._mappings:
-            raise exceptions.MapInputKeyError(InputType)
+        input_type = type(input_instance)
+        if input_type not in self._mappings:
+            raise exceptions.MapInputKeyError(input_type)
 
-        map_function = self._mappings[InputType].get(OutputType, None)
+        map_function = self._mappings[input_type].get(output_type, None)
         if not map_function:
-            raise exceptions.MapOutputKeyError(InputType, OutputType)
+            raise exceptions.MapOutputKeyError(input_type, output_type)
 
         return map_function(input_instance)
