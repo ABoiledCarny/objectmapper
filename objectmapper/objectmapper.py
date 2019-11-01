@@ -1,6 +1,6 @@
 '''ObjectMapper Class'''
 
-from typing import Any, Callable, Optional, Type, TypeVar
+from typing import Any, Callable, Optional, overload, Type, TypeVar
 
 from . import exceptions
 
@@ -17,18 +17,38 @@ class ObjectMapper:
     def __init__(self) -> None:
         self._mappings = dict()
 
+    @overload
+    def create_map(self,  # pylint: disable=no-self-use;
+                   input_type: Type[_InputType],
+                   output_type: Type[_OutputType],
+                   map_function: None,
+                   force: bool) -> Callable[[Callable[[_InputType], _OutputType]],
+                                            Callable[[_InputType], _OutputType]]:  # pragma: no cover
+        '''Stores a localized mapping between types. See `create_map`'''
+        ...
+
+    @overload
+    def create_map(self,  # pylint: disable=no-self-use
+                   input_type: Type[_InputType],
+                   output_type: Type[_OutputType],
+                   map_function: Callable[[_InputType], _OutputType],
+                   force: bool) -> None: # pragma: no cover
+        '''Stores a localized mapping between types. See `create_map`'''
+        ...
+
     def create_map(self,
                    input_type: Type[_InputType],
                    output_type: Type[_OutputType],
                    map_function: Optional[Callable[[_InputType], _OutputType]] = None,
-                   force: bool = False) \
-                   -> Optional[Callable[[Callable[[_InputType], _OutputType]], None]]:
+                   force: bool = False) -> Optional[Callable[[Callable[[_InputType], _OutputType]],
+                                                             Callable[[_InputType], _OutputType]]]:
         '''Stores a localized mapping between types. See `create_map`'''
         for map_type in [input_type, output_type]:
             if not isinstance(map_type, type):
                 raise exceptions.MapTypeError(map_type)
 
-        def set_map_function(map_function: Callable[[_InputType], _OutputType]) -> None:
+        def set_map_function(map_function: Callable[[_InputType], _OutputType]) \
+            -> Callable[[_InputType], _OutputType]:
             if not callable(map_function):
                 raise exceptions.MapFunctionTypeError(map_function)
 
@@ -39,10 +59,11 @@ class ObjectMapper:
                 if mapping:
                     raise exceptions.DuplicateMappingError(input_type, output_type, mapping)
             self._mappings[input_type][output_type] = map_function
+            return map_function
 
         if map_function is None:
             return set_map_function
-        return set_map_function(map_function)
+        set_map_function(map_function)
 
     def map(self, input_instance: Any, output_type: Type[_OutputType]) -> _OutputType:
         '''Converts `input_instance` using a mapping from

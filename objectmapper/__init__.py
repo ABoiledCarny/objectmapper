@@ -1,5 +1,5 @@
 # pylint: disable=missing-module-docstring
-from typing import Any, Callable, Optional, Type, TypeVar
+from typing import Any, Callable, Optional, overload, Type, TypeVar
 
 from .objectmapper import ObjectMapper, _InputType, _OutputType
 from .exceptions import (
@@ -30,11 +30,35 @@ __all__ = [
 _OBJECT_MAPPER = ObjectMapper()
 
 
+@overload
 def create_map(input_type: Type[_InputType],
                output_type: Type[_OutputType],
-               map_function: Callable[[_InputType], _OutputType] = None,
-               force: bool = False) \
-               -> Optional[Callable[[Callable[[_InputType], _OutputType]], None]]:
+               map_function: None,
+               force: bool) -> Callable[[Callable[[_InputType], _OutputType]],
+                                        Callable[[_InputType], _OutputType]]:  # pragma: no cover
+    '''If a map function is not provided, then it behaves as a decorator
+    and returns the decorated function
+    '''
+    ...
+
+
+@overload
+def create_map(input_type: Type[_InputType],
+               output_type: Type[_OutputType],
+               map_function: Callable[[_InputType], _OutputType],
+               force: bool) -> None:  # pragma: no cover
+    '''If a map function is provided, then there are only side effects and
+    nothing is returned.
+    '''
+    ...
+
+
+def create_map(input_type: Type[_InputType],
+               output_type: Type[_OutputType],
+               map_function: Optional[Callable[[_InputType], _OutputType]] = None,
+               force: bool = False) -> Optional[Callable[[Callable[[_InputType], _OutputType]],
+                                                         Callable[[_InputType], _OutputType]]]:
+
     '''Stores a mapping (`map_function`) from objects of type `input_type`
     to an object of type `output_type`. If `force` is `True`, then any
     pre-existing mapping from `input_type` to `output_type` is
