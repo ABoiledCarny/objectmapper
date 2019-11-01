@@ -7,7 +7,7 @@ import pytest
 import objectmapper
 
 @pytest.fixture
-def objectmapper_module():
+def empty_module():
     '''Returns a like-new instance of the objectmapper module.'''
     import objectmapper as objmap # pylint: disable=reimported, import-outside-toplevel
     importlib.reload(objmap)
@@ -42,27 +42,51 @@ def int_to_str_mapper_decorated(empty_mapper, int_to_str):
     return empty_mapper
 
 @pytest.fixture
-def int_to_str_module(objectmapper_module, int_to_str):
+def int_to_str_module(empty_module, int_to_str):
     '''Returns an instance of the objectmapper module with an imperative
     mapping from int to str.
     '''
-    objectmapper_module.create_map(int, str, int_to_str)
-    return objectmapper_module
+    empty_module.create_map(int, str, int_to_str)
+    return empty_module
 
 @pytest.fixture
-def int_to_str_module_decorated(objectmapper_module, int_to_str):
+def int_to_str_module_decorated(empty_module, int_to_str):
     '''Returns an instance of the objectmapper module with a decorated
     mapping from int to str.
     '''
-    objectmapper_module.create_map(int, str)(int_to_str)
-    return objectmapper_module
+    empty_module.create_map(int, str)(int_to_str)
+    return empty_module
 
-def test_mapper_output(int_to_str_mapper, int_to_str):
+def test_mapper_create_map_output(empty_mapper, int_to_str):
+    '''Test that the objectmapper's create_map returns nothing when not
+    used as a decorator.
+    '''
+    assert empty_mapper.create_map(int, str, int_to_str) is None
+
+def test_mapper_create_map_decorator_output(empty_mapper, int_to_str):
+    '''Test that the objectmapper's create_map returns the map function
+    when used as a decorator.
+    '''
+    assert empty_mapper.create_map(int, str)(int_to_str) is int_to_str
+
+def test_module_create_map_output(empty_module, int_to_str):
+    '''Test that the module's create_map returns nothing when not used as
+    a decorator.
+    '''
+    assert empty_module.create_map(int, str, int_to_str) is None
+
+def test_module_create_map_decorator_output(empty_module, int_to_str):
+    '''Test that the module's create_map returns the map function when
+    used as a decorator.
+    '''
+    assert empty_module.create_map(int, str)(int_to_str) is int_to_str
+
+def test_mapper_map_output(int_to_str_mapper, int_to_str):
     '''Test imperative object mapping matches raw function output.'''
     integer = 42
     assert int_to_str_mapper.map(integer, str) == int_to_str(integer)
 
-def test_mapper_decorated_output(int_to_str_mapper_decorated, int_to_str):
+def test_mapper_map_decorated_output(int_to_str_mapper_decorated, int_to_str):
     '''Test decorated object mapping matches raw function output.'''
     integer = 42
     assert int_to_str_mapper_decorated.map(integer, str) == int_to_str(integer)
