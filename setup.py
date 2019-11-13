@@ -28,7 +28,7 @@ tests_require = docs_require + [
     'pylint==2.4.3',
     'pytest==5.2.2',
     'pytest-cov==2.8.1',
-    'pytype==2019.10.17',
+    'mypy==0.740',
     'tox==3.14.0',
 ]
 

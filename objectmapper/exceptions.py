@@ -5,8 +5,8 @@ class ObjectMapperError(Exception):
 
 class DuplicateMappingError(ObjectMapperError):
     '''Raised when a mapping between classes is redundantly defined without forcing an overwrite.'''
-    def __init__(self, input_type, output_type, mapping):
-        super().__init__(f'Mapping already exists from {input_type} to {output_type} -- {mapping}')
+    def __init__(self, input_types, output_type, mapping):
+        super().__init__(f'Mapping already exists from {input_types} to {output_type} -- {mapping}')
 
 
 class MapTypeError(ObjectMapperError, TypeError):
@@ -27,12 +27,12 @@ class MapKeyError(ObjectMapperError, KeyError):
 
 class MapInputKeyError(MapKeyError):
     '''Raised when mapping an object of an unknown type.'''
-    def __init__(self, input_type):
-        super().__init__(f'No mappings found for instances of type {input_type}')
+    def __init__(self, input_types):
+        super().__init__(f'No mappings found for instances of types {input_types}')
 
 
 class MapOutputKeyError(MapKeyError):
     '''Raised when mapping an object to an unknown type.'''
-    def __init__(self, input_type, output_type):
-        super().__init__(f'No mappings found from instances of type {input_type} to type'
+    def __init__(self, input_types, output_type):
+        super().__init__(f'No mappings found from instances of types {input_types} to type'
                          f' {output_type}')

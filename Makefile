@@ -13,7 +13,7 @@ lint:
 	pylint --rcfile .pylintrc $(PKG_NAME) tests
 
 typecheck:
-	pytype --config .pytyperc $(PKG_NAME) tests
+	mypy --config-file .mypy.ini $(PKG_NAME) tests
 
 coverage:
 	pytest --cov-config .coveragerc --cov=$(PKG_NAME)
